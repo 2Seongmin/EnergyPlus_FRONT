@@ -33,6 +33,7 @@ import MypagePassword from "./components/Mypage/Member/MypagePassword";
 import MypageMile from "./components/Mypage/Mileage/MypageMile";
 import MypageMileVisual from "./components/Mypage/Mileage/MypageMileVisual";
 import Member from "./components/admin/member/Member";
+import AdminQna from "./components/Admin/Mypage/AdminQna";
 
 function App() {
   return (
@@ -96,6 +97,9 @@ function App() {
           <Route path="/login" element={<LoginForm />} />
           {/* 관리자 회원관리 */}
           <Route path="/admin/member" element={<Member />} />
+
+          {/* 관리자 마이페이지 Q&A */}
+          <Route path="/admin/mypage/qna" element={<AdminQna />} />
 
         </Routes>
       </div>

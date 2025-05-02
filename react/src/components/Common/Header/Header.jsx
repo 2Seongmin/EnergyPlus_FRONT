@@ -46,7 +46,7 @@ const Header = () => {
     window.addEventListener('promiseChanged', handlePromiseChanged);
 
     return () => {
-      window.addEventListener('promiseChanged', handlePromiseChanged);
+      window.removeEventListener('promiseChanged', handlePromiseChanged);
     };
   }, [isLoggedIn]); // 로그인 상태 바뀔 때마다 실행함
 
