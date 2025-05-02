@@ -26,12 +26,18 @@ const AdminQna = () => {
     const currentBlock = Math.floor(page / pageBlockSize); // 현재 블록 번호
     const startPage = currentBlock * pageBlockSize;
     const endPage = Math.min(startPage + pageBlockSize, totalPages);
+
+    const token = sessionStorage.getItem("accessToken");
   
+    // 조회
     useEffect(() => {
       axios.get("http://localhost/admin/qnas", {
         params: {
           page : page,
           keyword : searchKeyword, // 검색어
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
       })
         .then((response) => {
@@ -89,6 +95,7 @@ const AdminQna = () => {
           <thead>
             <tr>
               <th>No</th>
+              <th>작성자</th>
               <th>제목</th>
               <th>작성시간</th>
               <th>답변 현황</th>
@@ -103,6 +110,7 @@ const AdminQna = () => {
                   onClick={() => navi(`/mypage_qna/${qna.qnaId}`)} 
                   style={{ cursor: "pointer"}}>
                 <td>{qna.qnaId}</td>
+                <td>{qna.userName}</td>
                 <td>{qna.qnaTitle}</td>
                 <td>{qna.qnaDate}</td>
                 <td className=
