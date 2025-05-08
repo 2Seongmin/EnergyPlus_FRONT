@@ -22,6 +22,7 @@ import {
 } from './Member.styles';
 
 
+
 const Member = () => {
   const itemsPerPage = 10;
   const [members, setMembers] = useState([]);
