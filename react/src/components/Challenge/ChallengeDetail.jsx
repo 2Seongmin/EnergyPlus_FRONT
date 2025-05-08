@@ -15,14 +15,19 @@ import {
   BackBtn
 } from "../TableStyle/Table.style";
 
+
 const ChallengeDetail = () => {
   const { challengeSeq } = useParams();
   const navi = useNavigate();
   const [challenge, setChallenge] = useState(null);
 
+  const token = sessionStorage.getItem("accessToken");
+
   useEffect(() => {
     axios.get(`http://localhost/challenges/${challengeSeq}`)
-      .then(res => setChallenge(res.data))
+      .then(res => {
+        setChallenge(res.data);
+      })
       .catch(err => console.error("챌린지 상세 불러오기 실패", err));
   }, [challengeSeq]);
 
@@ -50,8 +55,10 @@ const ChallengeDetail = () => {
         <HeaderRow>
           <Title>챌린지 상세 확인</Title>
           <SearchBox>
-            <SearchButton onClick={handleEdit}>글 수정</SearchButton>
-            <DeleteButton onClick={handleDelete}>글 삭제</DeleteButton>
+              <>
+                <SearchButton onClick={handleEdit}>글 수정</SearchButton>
+                <DeleteButton onClick={handleDelete}>글 삭제</DeleteButton>
+              </>
           </SearchBox>
         </HeaderRow>
 

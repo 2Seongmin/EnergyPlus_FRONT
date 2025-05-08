@@ -1,13 +1,11 @@
-import { useNavigate } from "react-router-dom";
+import React from "react";
 import AdminSidebar from "./AdminSidebar";
-/* 관리자 페이지 구현 */
+
 const Admin = () => {
-  const navigate = useNavigate();
   return (
-    <>
+    <div style={{ display: "flex" }}>
       <AdminSidebar />
-      <div>어드민 페이지</div>
-    </>
+    </div>
   );
 };
 

@@ -1,12 +1,13 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Wrapper, HeaderRow, Title, SearchBox, SearchButton, 
-      DeleteButton, ContentDiv, BackBtn, ReplyDetail, ReplyDiv,  
+      DeleteButton, ContentDiv, BackBtn, 
       ContentTitle, ContentDate, ContentDetail } from "../../TableStyle/Table.style";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Reply from "./Reply/Reply";
+import AdminReply from "./Reply/AdminReply";
+import AdminReplyForm from "./Reply/AdminReplyForm";
 
-const MypageQnaDetail = () => {
+const AdminQnaDetail = () => {
 
   const navi = useNavigate();
   const { id } = useParams();
@@ -37,42 +38,6 @@ const MypageQnaDetail = () => {
       });
   }, [id]);
 
-  // 삭제
-  const handleDelete = (e) => {
-    e.preventDefault();
-    
-    if(confirm("정말 삭제하시겠습니까?")){
-      // 로그인 구현 완료되면 아래 부분 수정
-      axios.delete(`http://localhost/qnas/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then(() => {
-        setBoard({
-          qnaTitle : "삭제중입니다...",
-          qnaDate : "삭제중입니다...",
-          qnaContent : "삭제중입니다..."
-        });
-
-        setTimeout(() => {
-          alert("삭제되었습니다.");
-          navi("/mypage_qna");
-        }, 500);
-      })
-      .catch((error) => {
-        console.error("글 삭제 실패", error);
-        alert("글 삭제에 실패했습니다.");
-      });
-    }
-  };
-
-  // 수정
-  const handleEdit = () => {
-    navi(`/mypage_qna_form/${id}`, { replace: true });
-  };
-
-
   if (loading) {
     return (
       <HeaderRow>
@@ -92,11 +57,7 @@ const MypageQnaDetail = () => {
     <>
       <Wrapper>
         <HeaderRow>
-          <Title>나의 QnA</Title>
-          <SearchBox>
-            <SearchButton onClick={handleEdit}>글 수정</SearchButton>
-            <DeleteButton onClick={handleDelete}>글 삭제</DeleteButton>
-          </SearchBox>
+          <Title>QnA 게시글 번호 : {id}</Title>
         </HeaderRow>
         <ContentDiv>
           <HeaderRow>
@@ -111,11 +72,12 @@ const MypageQnaDetail = () => {
         
         {/* 댓글란 */}
 
-        {qnaStatus === "Y" && <Reply qnaId={id} />}
-        {qnaStatus === "N" && (
-          <ReplyDiv>
-            <ReplyDetail>등록된 댓글이 없습니다.</ReplyDetail>
-          </ReplyDiv>
+        {qnaStatus === "Y" ? (
+          <AdminReply qnaId={id} /> // 댓글 존재
+        ) : qnaStatus === "N" ? (
+          <AdminReplyForm qnaId={id} /> // 댓글 없음 → 작성 폼
+        ) : (
+          <p>댓글 상태를 불러오는 중입니다...</p> // 초기 로딩 처리
         )}
 
         <BackBtn onClick={() => navi(-1)}>뒤로가기</BackBtn>
@@ -124,4 +86,4 @@ const MypageQnaDetail = () => {
   );
 };
 
-export default MypageQnaDetail;
+export default AdminQnaDetail;

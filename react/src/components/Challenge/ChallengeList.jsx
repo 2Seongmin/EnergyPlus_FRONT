@@ -30,7 +30,8 @@ const ChallengeList = () => {
   useEffect(() => {
     axios.get("http://localhost/challenges",{
       params : {page, size, keyword: searchKeyword }
-    })
+    },
+    )
     .then(res => {
       setChallenges(res.data);
     })

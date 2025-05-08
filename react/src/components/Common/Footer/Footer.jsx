@@ -9,7 +9,7 @@ const Footer = () => {
         </div>
         <div className="footer-bottom">
           KH정보교육원 종로지원 | 에코로그 팀 <br />
-          남대문로 120 대일빌딩 2층, 3층
+          남대문로 120 그레이츠 청계 2층, 3층
         </div>
       </footer>
     </>

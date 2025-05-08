@@ -92,7 +92,7 @@ const Title = styled.h1`
   font-weight: bold;
   margin-top: 100px;
   margin-left: 30%;
-  margin-bottom: 60px;
+  margin-bottom: 40px;
   text-align: start;
 `;
 
