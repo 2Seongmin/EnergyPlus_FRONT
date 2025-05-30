@@ -78,6 +78,11 @@ const MileageForm = () => {
             placeholder="환경 보호를 위한 행동을 작성해주세요."
             value={mileageContent}
             onChange={(e) => setContent(e.target.value)}
+            onKeyUp={(e) => {
+              if (e.key === "Enter") {
+                console.log("엔터가 눌렸습니다");
+              }
+            }}
           />
         </Row>
 
@@ -87,6 +92,11 @@ const MileageForm = () => {
             placeholder="사진이 잘 안보일 경우를 대비해 간단한 설명을 작성해주세요."
             value={fileDescription}
             onChange={(e) => setFileDescription(e.target.value)}
+            onKeyUp={(e) => {
+              if (e.key === "Enter") {
+                console.log("엔터가 눌렸습니다");
+              }
+            }}
           />
         </Row>
 
@@ -176,6 +186,7 @@ const Textarea = styled.textarea`
   resize: none;
   background-color: #ffffff;
   border: none;
+  white-space: pre-wrap;
 `;
 
 const ButtonLayout = styled.div`

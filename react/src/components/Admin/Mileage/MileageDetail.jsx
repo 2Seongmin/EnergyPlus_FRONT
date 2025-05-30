@@ -12,6 +12,7 @@ import {
   BackBtn,
 } from "../../TableStyle/Table.style";
 import styled from "styled-components";
+import global from "../../../../conf";
 
 const MileageDetail = () => {
   const { mileageSeq } = useParams();
@@ -21,19 +22,17 @@ const MileageDetail = () => {
   const [showRejectReason, setShowRejectReason] = useState(false);
   const [mileageReject, setMileageReject] = useState("");
   const [mileageScore, setMileageScore] = useState("");
+  const apiUrl = global.API_URL;
 
   useEffect(() => {
     const fetchDetail = async () => {
       try {
         const token = sessionStorage.getItem("accessToken");
-        const res = await axios.get(
-          `http://localhost/admin/mileages/${mileageSeq}`,
-          {
-            headers: {
-              Authorization: token ? `Bearer ${token}` : undefined,
-            },
-          }
-        );
+        const res = await axios.get(`${apiUrl}/admin/mileages/${mileageSeq}`, {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : undefined,
+          },
+        });
         setMileage(res.data);
       } catch (err) {
         console.error("마일리지 상세 불러오기 실패", err);
@@ -62,7 +61,7 @@ const MileageDetail = () => {
     try {
       const token = sessionStorage.getItem("accessToken");
       await axios.post(
-        `http://localhost/admin/mileages/${mileageSeq}/status`,
+        `${apiUrl}admin/mileages/${mileageSeq}/status`,
         {
           mileageSeq: Number(mileageSeq), // 이거 꼭 있어야 백엔드에서 DTO에 바인딩됨
           mileageScore: Number(mileageScore),
@@ -92,7 +91,7 @@ const MileageDetail = () => {
     try {
       const token = sessionStorage.getItem("accessToken");
       await axios.post(
-        `http://localhost/admin/mileages/${mileageSeq}/statusReject`,
+        `${apiUrl}/admin/mileages/${mileageSeq}/statusReject`,
         {
           mileageReject,
         },
@@ -129,7 +128,7 @@ const MileageDetail = () => {
           {mileage.mileageImg ? (
             <div style={{ marginTop: "2rem" }}>
               <img
-                src={`http://localhost${mileage.mileageImg}`}
+                src={`${apiUrl}${mileage.mileageImg}`}
                 alt="마일리지 이미지"
                 style={{
                   maxWidth: "100%",
@@ -141,9 +140,12 @@ const MileageDetail = () => {
           ) : (
             <p>이미지가 없습니다.</p>
           )}
-          <div style={{ marginTop: "1rem" }}>
-            {mileage.mileageContent || "내용이 없습니다."}
-          </div>
+          <div
+            style={{ marginTop: "1rem" }}
+            dangerouslySetInnerHTML={{
+              __html: mileage.mileageContent.replace(/\r\n/g, "<br/>"),
+            }}
+          />
           <br />
           <strong>상태:</strong>{" "}
           {mileage.mileageStatus === "N" ? "확인중" : "답변완료"}
@@ -204,7 +206,7 @@ export default MileageDetail;
 
 const ActionButtonRow = styled.div`
   display: flex;
-  justify-content: center; // 수평 중앙 정렬
+  justify-content: center;
   gap: 1rem;
   margin-top: 1rem;
 `;
