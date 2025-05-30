@@ -15,40 +15,29 @@ const Header = () => {
 
   // 나의 다짐 조회
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        // 토큰 없으면 다짐 비워줌
-        const token = sessionStorage.getItem("accessToken");
+    const token = sessionStorage.getItem("accessToken");
 
-        if (!token) {
-          setUserPromise("");
-          return;
-        }
-        const response = await axios.get("http://localhost/promise/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setUserPromise(response.data.userPromise);
-      } catch (error) {
+    if (!token) {
+      setUserPromise("");
+      return;
+    }
+
+    axios
+      .get("http://localhost/promise/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setUserPromise(response.data.userPromise || "");
+      })
+      .catch((error) => {
         console.error("나의 다짐 불러오기 실패", error);
-        setUserPromise(""); // 에러 떠도 다짐 비워줌
-      }
-    };
-    fetchUserData();
+        setUserPromise("");
+      });
+  }, [isLoggedIn]);
 
-    // 마이페이지에서 나의 다짐 수정 시 실시간으로 수정되도록 이벤트 발생
-    const handlePromiseChanged = () => {
-      fetchUserData();
-    };
-
-    window.addEventListener("promiseChanged", handlePromiseChanged);
-
-    return () => {
-      window.addEventListener("promiseChanged", handlePromiseChanged);
-    };
-  }, [isLoggedIn]); // 로그인 상태 바뀔 때마다 실행함
-
+  
   useEffect(() => {
     // 초기 로그인 상태 확인
     checkLoginStatus();
