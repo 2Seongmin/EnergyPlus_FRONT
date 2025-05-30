@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import global from "../../../../conf";
 
 const MileageForm = () => {
   const [mileageTitle, setTitle] = useState("");
@@ -8,6 +9,7 @@ const MileageForm = () => {
   const [file, setFile] = useState(null);
   const [fileDescription, setFileDescription] = useState("");
   const token = sessionStorage.getItem("accessToken");
+  const API_URL = global.API_URL;
 
   const enrollButton = async () => {
     if (!file) {
@@ -23,7 +25,7 @@ const MileageForm = () => {
     formData.append("fileDescription", fileDescription);
 
     try {
-      const response = await fetch("http://localhost/mileages/save", {
+      const response = await fetch(`${API_URL}/mileages/save`, {
         method: "POST",
         body: formData,
         headers: {

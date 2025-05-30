@@ -9,54 +9,65 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import global from "../../../conf";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 const Chart1 = () => {
   const [chartData, setChartData] = useState(null);
+  const apiUrl = global.API_URL;
 
   useEffect(() => {
-    const fetchAllPages = async () => {
-      const allData = [];
+    const datas = [];
 
-      for (let page = 1; page <= 10; page++) {
-        try {
-          const res = await axios.get(
-            `http://localhost/apis/energyUsage1?pageNo=${page}`
-          );
+    function callPage(page) {
+      if (page > 10) {
+        const grouped = {};
 
-          const items = res.data.opentable?.field || [];
-          allData.push(...items);
-        } catch (error) {
-          console.error(`page ${page} 불러오기 실패`, error);
+        for (let i = 0; i < datas.length; i++) {
+          const item = datas[i];
+          const energy = item.ENGSRC_NM;
+          const co2 = parseFloat(item.USEMS_QNTY);
+
+          if (grouped[energy] === undefined) {
+            grouped[energy] = 0;
+          }
+          grouped[energy] += co2;
         }
+        const labels = Object.keys(grouped);
+        const values = [];
+        for (let j = 0; j < labels.length; j++) {
+          const key = labels[j];
+          values.push(grouped[key]);
+        }
+
+        setChartData({
+          labels,
+          datasets: [
+            {
+              label: "상업부문-업종별 에너지 사용량",
+              data: values,
+              backgroundColor: "rgba(75, 192, 192, 0.6)",
+            },
+          ],
+        });
+
+        return;
       }
+      axios
+        .get(`${apiUrl}/apis/energyUsage1?pageNo=${page}`)
+        .then((response) => {
+          const items = response.data.opentable?.field || [];
+          datas.push(...items);
+          callPage(page + 1);
+        })
+        .catch((error) => {
+          console.error(`${page} 호출 실패`, error);
+        });
+    }
 
-      const grouped = {};
-      allData.forEach((item) => {
-        const energy = item.ENGSRC_NM;
-        const value = parseFloat(item.USEMS_QNTY);
-        if (!grouped[energy]) grouped[energy] = 0;
-        grouped[energy] += value;
-      });
-
-      const labels = Object.keys(grouped);
-      const values = labels.map((k) => grouped[k]);
-
-      setChartData({
-        labels,
-        datasets: [
-          {
-            label: "상업부문-업종별 에너지 사용량",
-            data: values,
-            backgroundColor: "rgba(75, 192, 192, 0.6)",
-          },
-        ],
-      });
-    };
-
-    fetchAllPages();
-  }, []);
+    callPage(1);
+  }, [apiUrl]);
 
   if (!chartData) return <div>로딩 중...</div>;
 

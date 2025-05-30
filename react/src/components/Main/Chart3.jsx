@@ -11,8 +11,8 @@ import {
   PointElement,
 } from "chart.js";
 import axios from "axios";
+import global from "../../../conf";
 
-// chart.js 기본 설정
 ChartJS.register(
   Title,
   Tooltip,
@@ -25,24 +25,27 @@ ChartJS.register(
 
 const Chart3 = () => {
   const [chartData, setChartData] = useState(null);
+  const apiUrl = global.API_URL;
 
   useEffect(() => {
     axios
-      .get("http://localhost/apis/carbon")
+      .get(`${apiUrl}/apis/carbon`)
       .then((response) => {
         const data = response.data;
-        const dateMap = {};
+        const datas = {};
 
-        data.forEach((item) => {
+        for (let i = 0; i < data.length; i++) {
+          const item = data[i];
           const date = new Date(item.timestamp).toLocaleDateString();
-          if (!dateMap[date]) {
-            dateMap[date] = 0;
-          }
-          dateMap[date] += item.coppm;
-        });
 
-        const labels = Object.keys(dateMap);
-        const coppmValues = Object.values(dateMap);
+          if (!datas[date]) {
+            datas[date] = 0;
+          }
+          datas[date] += item.coppm;
+        }
+
+        const labels = Object.keys(datas);
+        const coppmValues = Object.values(datas);
 
         setChartData({
           labels,

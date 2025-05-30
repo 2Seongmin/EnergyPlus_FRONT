@@ -4,18 +4,20 @@ import axios from "axios";
 import StyleImg1 from "../../../assets/img/bicycleImg.png";
 import StyleImg2 from "../../../assets/img/containerImg.png";
 import { useNavigate } from "react-router-dom";
+import global from "../../../../conf";
 
 const MileageInfo = () => {
   const navi = useNavigate();
   const [selected, setSelected] = useState("bicycle");
+  const API_URL = global.API_URL;
 
   useEffect(() => {
     let apiUrl = "";
 
     if (selected === "bicycle") {
-      apiUrl = `http://localhost/apis/bicycle`;
+      apiUrl = `${API_URL}/apis/bicycle`;
     } else if (selected === "container") {
-      apiUrl = `http://localhost/apis/container`;
+      apiUrl = `${API_URL}/apis/container`;
     }
 
     axios.get(apiUrl).then((response) => {

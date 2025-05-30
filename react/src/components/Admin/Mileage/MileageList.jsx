@@ -10,6 +10,7 @@ import {
   PageBtn,
 } from "../../TableStyle/Table.style";
 import AdminSidebar from "../AdminSidebar";
+import global from "../../../../conf";
 
 const MileageList = () => {
   const [mileages, setMileages] = useState([]);
@@ -17,10 +18,11 @@ const MileageList = () => {
 
   const token = sessionStorage.getItem("accessToken");
   const navigate = useNavigate();
+  const apiUrl = global.API_URL;
 
   useEffect(() => {
     axios
-      .get(`http://localhost/admin/mileages?page=${pageNo}`, {
+      .get(`${apiUrl}/admin/mileages?page=${pageNo}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {

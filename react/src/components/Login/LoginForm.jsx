@@ -17,7 +17,7 @@ import {
   Divider,
 } from "./LoginForm.styles";
 
-import kakaoLogo from '../../assets/kakao_logo.png';
+import kakaoLogo from "../../assets/kakao_logo.png";
 
 const LoginForm = () => {
   const [userEmail, setUserEmail] = useState("");
@@ -65,7 +65,10 @@ const LoginForm = () => {
       }
     } catch (error) {
       console.error("로그인 오류:", error);
-      setErrorMsg(error.response?.data?.error || "로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
+      setErrorMsg(
+        error.response?.data?.error ||
+          "로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -89,14 +92,26 @@ const LoginForm = () => {
     <LoginContainer>
       <LoginBox>
         <LoginTitle>로그인</LoginTitle>
-        
+
         {/* 일반 로그인 폼 */}
         <Form onSubmit={handleLogin}>
           {errorMsg && <ErrorMessage>{errorMsg}</ErrorMessage>}
 
-          <InputField type="email" placeholder="이메일" value={userEmail} onChange={(e) => setUserEmail(e.target.value)} disabled={isLoading} />
+          <InputField
+            type="email"
+            placeholder="이메일"
+            value={userEmail}
+            onChange={(e) => setUserEmail(e.target.value)}
+            disabled={isLoading}
+          />
 
-          <InputField type="password" placeholder="비밀번호" value={userPassword} onChange={(e) => setUserPassword(e.target.value)} disabled={isLoading} />
+          <InputField
+            type="password"
+            placeholder="비밀번호"
+            value={userPassword}
+            onChange={(e) => setUserPassword(e.target.value)}
+            disabled={isLoading}
+          />
 
           <LoginButton type="submit" disabled={isLoading}>
             {isLoading ? "로그인 중" : "로그인"}
@@ -119,7 +134,11 @@ const LoginForm = () => {
 
         {/* 소셜 로그인 섹션 */}
         <SocialLoginSection>
-          <KakaoLoginButton src={kakaoLogo} onClick={handleKakaoLogin} disabled={isLoading} /> 
+          <KakaoLoginButton
+            src={kakaoLogo}
+            onClick={handleKakaoLogin}
+            disabled={isLoading}
+          />
         </SocialLoginSection>
       </LoginBox>
     </LoginContainer>
