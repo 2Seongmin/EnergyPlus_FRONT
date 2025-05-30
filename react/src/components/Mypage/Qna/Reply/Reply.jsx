@@ -1,40 +1,32 @@
-import { HeaderRow, ReplyDiv, ReplyTitle, ReplyDate, 
-  ReplyDetail, DeleteReply, SearchButton, Replybutton } from "../../../TableStyle/Table.style";
+import { HeaderRow, ReplyDiv, ReplyTitle, ReplyDate, ReplyDetail } from "../../../TableStyle/Table.style";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import ReplyForm from "./ReplyForm";
 import ReplyFormEdit from "./ReplyFormEdit";
+import URL_CONFIG from "../../../../../conf";
 
 
 const Reply = ({ qnaId }) => {
 
-  const navi = useNavigate();
   const [reply, setReply] = useState(null);
   const [loading, setLoading] = useState(true);
-  
-  // 수정 여부
   const [isEditing, setIsEditing] = useState(false);
 
+  const apiUrl = URL_CONFIG.API_URL;
+
   // 댓글 불러오기
-  const fetchReply = () => {
-    axios.get(`http://localhost/replys?qnaId=${qnaId}`)
-      .then((response) => {
-        if (response.status === 200 && response.data.length > 0) {
-          setReply(response.data[0]);
-        } else {
-          setReply(null);
-        }
+  useEffect(() => {
+    axios
+      .get(`${apiUrl}/replys?qnaId=${qnaId}`)
+      .then((res) => {
+        const [firstReply] = res.data;
+        setReply(firstReply || null);
       })
-      .catch((error) => {
-        console.log("댓글 조회 중 오류 발생", error);
+      .catch((err) => {
+        console.error("댓글 조회 중 오류 발생", err);
         setReply(null);
       })
       .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    fetchReply();
   }, [qnaId]);
 
   if (loading) {

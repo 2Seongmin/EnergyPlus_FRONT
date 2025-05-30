@@ -1,11 +1,12 @@
 import { HeaderRow, ReplyDiv, SearchButton, ReplyTextarea } from "../../../TableStyle/Table.style";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import URL_CONFIG from "../../../../../conf";
 
 const ReplyFormEdit = ({ replyId, qnaId, originReply, onComplete }) => {
 
   const [replyContent, setReplyContent] = useState("");
+  const apiUrl = URL_CONFIG.API_URL;
 
   useEffect(() => {
     setReplyContent(originReply);
@@ -17,14 +18,13 @@ const ReplyFormEdit = ({ replyId, qnaId, originReply, onComplete }) => {
       return;
     }
 
-    axios.put(`http://localhost/replys/${replyId}`, {
+    axios.put(`${apiUrl}/replys/${replyId}`, {
       qnaId,
       qnaReply: replyContent,
     })
       .then(() => {
         alert("댓글이 수정되었습니다.");
-        setReplyContent("");
-        onComplete(); // 수정 후 콜백
+        if (onComplete) onComplete(); // 수정 후 콜백
       })
       .catch((error) => {
         console.error("댓글 수정 실패:", error);

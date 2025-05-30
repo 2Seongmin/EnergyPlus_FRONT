@@ -1,9 +1,10 @@
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Wrapper, HeaderRow, PageBtn, Pagination, SearchBox, SearchButton,
-  SearchInput, StyledTable, Title, WriteButton, BackBtn } from "../../TableStyle/Table.style";
+import { Wrapper, HeaderRow, StyledTable, Title, BackBtn } from "../../TableStyle/Table.style";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import URL_CONFIG from "../../../../conf.js";
+import CustomPagination from "../../Common/Pagination.jsx";
+import SearchBar from "../../Common/SearchBar.jsx";
 
 const MypageQna = () => {
 
@@ -13,85 +14,52 @@ const MypageQna = () => {
   const pageParam = parseInt(searchParams.get("page")) || 0;
   const keywordParam = searchParams.get("keyword") || "";
   
-  // 검색
-  const [keyword, setKeyword] = useState(keywordParam);
   const [searchKeyword, setSearchKeyword] = useState(keywordParam); // 검색 확정된 값
-
-  const [boards, setBoards] = useState([]);
-  const [page, setPage] = useState(pageParam);
-  const [totalCount, setTotalCount] = useState(0);
-  const size = 5;
+  const [boards, setBoards] = useState([]); // 결과 목록
+  const [page, setPage] = useState(pageParam); // 현재 페이지
+  const [totalCount, setTotalCount] = useState(0); // 전체 항목 수
+  const size = 5; // 페이지당 게시글 수
   const totalPages = Math.ceil(totalCount/size); // 계산된 총 페이지 수
 
-  const pageBlockSize = 5; // 한 화면에 보여줄 숫자 버튼 수
-  const currentBlock = Math.floor(page / pageBlockSize); // 현재 블록 번호
-  const startPage = currentBlock * pageBlockSize;
-  const endPage = Math.min(startPage + pageBlockSize, totalPages);
-
   const token = sessionStorage.getItem("accessToken");
+  const apiUrl = URL_CONFIG.API_URL;
   
+
   useEffect(() => {
-    axios.get("http://localhost/qnas", {
+    axios.get(`${apiUrl}/qnas`, {
       params: {
         page : page,
         keyword : searchKeyword, // 검색어
       },
       headers: {
-        Authorization: `Bearer ${token}`, // 토큰 추가
+        Authorization: `Bearer ${token}`,
       },
     })
       .then((response) => {
-        //console.log(response);
         setBoards(response.data.list);
         setTotalCount(response.data.totalCount); // 페이지네이션 유지
       })
       .catch((error) => {
         console.log(error);
+        alert("데이터를 불러오는 데 실패했습니다.");
       });
   }, [page, searchKeyword]);
 
-  // 검색 버튼 클릭 > URL에 반영
-  const handleSearch = () => {
-    setPage(0); // 검색했을 때 1페이지부터
-    setSearchKeyword(keyword);
-    setSearchParams({ page: 0, keyword }); // URL 변경
-  };
-
-  // 페이지 유지
-  const goToPage = (p) => {
-    setPage(p);
-    setSearchParams({ page: p, keyword: searchKeyword });
-  };
-
-  // 검색어 초기화
-  const resetSearch = () => {
-    setKeyword("");
-    setSearchKeyword("");
-    setPage(0);
-    setSearchParams({ page: 0 }); // keyword 제거
-  };
 
   return(
     <>
       <Wrapper>
         <HeaderRow>
           <Title>QnA</Title>
-
           {/* 검색창 */}
-          <SearchBox>
-            <SearchInput 
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              placeholder="검색어를 입력하세요"/>
-
-            <SearchButton onClick={handleSearch}>검색</SearchButton>
-
-            {keyword.length > 0 && (
-              <SearchButton onClick={resetSearch}>초기화</SearchButton>
-            )}
-
-            <WriteButton onClick={() => navi("/mypage_qna_write")}>글 작성</WriteButton>
-          </SearchBox>
+          <SearchBar
+            initialKeyword={keywordParam}
+            onSearchConfirm={(confirmedKeyword) => {
+              setSearchKeyword(confirmedKeyword);
+              setPage(0);
+              setSearchParams(confirmedKeyword ? { page: 0, keyword: confirmedKeyword } : { page: 0 });
+            }}
+          />
         </HeaderRow>
 
         <StyledTable>
@@ -131,23 +99,14 @@ const MypageQna = () => {
         )}
 
         {/* 페이징 처리 */}
-        <Pagination>
-          <PageBtn onClick={() => setPage(0)} disabled={page === 0}>≪</PageBtn>
-          <PageBtn onClick={() => setPage((prev) => Math.max(prev - 1, 0))} disabled={page === 0}>{"<"}</PageBtn>
-
-          {Array.from({ length: endPage - startPage }, (_, i) => (
-            <PageBtn
-              key={startPage + i}
-              onClick={() => goToPage(startPage + i)}
-              active={page === startPage + i}
-            >
-              {startPage + i + 1}
-            </PageBtn>
-          ))}
-
-          <PageBtn onClick={() => setPage((prev) => Math.min(prev + 1, totalPages - 1))} disabled={page === totalPages - 1}>{">"}</PageBtn>
-          <PageBtn onClick={() => setPage(totalPages - 1)} disabled={page === totalPages - 1}>≫</PageBtn>
-        </Pagination>
+        <CustomPagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={(p) => {
+            setPage(p);
+            setSearchParams({ page: p, keyword: searchKeyword });
+          }}
+        />
 
         <BackBtn onClick={() => navi("/mypage_main")}>뒤로가기</BackBtn>
       </Wrapper>

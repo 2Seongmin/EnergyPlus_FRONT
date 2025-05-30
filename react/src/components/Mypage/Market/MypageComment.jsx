@@ -7,39 +7,36 @@ const MypageComment = ({ marketNo }) => {
   const [comments, setComments] = useState([]);
   const [replies, setReplies] = useState([]);
 
-  useEffect(() => {
+    useEffect(() => {
     fetchComments();
   }, [marketNo]);
 
-  const fetchComments = () => {
-    const config = token
-      ? { headers: { Authorization: `Bearer ${token}` } }
-      : {};
+  const config = token
+    ? { headers: { Authorization: `Bearer ${token}` } }
+    : {};
 
+  const fetchComments = () => {
     axios
       .get(`http://localhost/markets/comments/${marketNo}`, config)
       .then((res) => {
-        setComments(res.data);
-        fetchRepliesForAllComments(res.data);
+        const comments = res.data;
+        setComments(comments);
+        fetchRepliesForAllComments(comments);
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("댓글 조회 실패", err));
   };
 
   const fetchRepliesForAllComments = (comments) => {
-    const config = token
-      ? { headers: { Authorization: `Bearer ${token}` } }
-      : {};
-
-    const allReplies = [];
     Promise.all(
       comments.map((c) =>
-        axios
-          .get(`http://localhost:80/markets/reply/${c.marketCommentNo}`, config)
-          .then((res) => allReplies.push(...res.data))
+        axios.get(`http://localhost/markets/reply/${c.marketCommentNo}`, config)
       )
     )
-      .then(() => setReplies(allReplies))
-      .catch((err) => console.error(err));
+      .then((responses) => {
+        const allReplies = responses.flatMap((res) => res.data);
+        setReplies(allReplies);
+      })
+      .catch((err) => console.error("답글 조회 실패", err));
   };
 
   return (

@@ -7,8 +7,8 @@ const MypageDelMember = () => {
 
   const navi = useNavigate();
   
-  const handleWithdraw = async () => {
-    const confirmed = window.confirm("정말 탈퇴하시겠습니까?");
+  const handleWithdraw = () => {
+  const confirmed = window.confirm("정말 탈퇴하시겠습니까?");
     if (!confirmed) return;
 
     const token = sessionStorage.getItem("accessToken");
@@ -17,23 +17,25 @@ const MypageDelMember = () => {
       return;
     }
 
-    try {
-      const response = await axios.delete("http://localhost/members/withdrawal", {
+    axios
+      .delete("http://localhost/members/withdrawal", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+      })
+      .then((response) => {
+        alert(response.data.message || "회원 탈퇴가 완료되었습니다.");
+        sessionStorage.clear();
+        window.location.replace("/");
+      })
+      .catch((error) => {
+        console.error("탈퇴 실패", error);
+        alert(
+          error.response?.data?.error || "회원 탈퇴 중 오류가 발생했습니다."
+        );
       });
-
-      alert(response.data.message || "회원 탈퇴가 완료되었습니다.");
-      sessionStorage.clear();
-      window.location.replace("/");
-    } catch (error) {
-      console.error("탈퇴 실패", error);
-      alert(
-        error.response?.data?.error || "회원 탈퇴 중 오류가 발생했습니다."
-      );
-    }
   };
+
 
   return(
     <>

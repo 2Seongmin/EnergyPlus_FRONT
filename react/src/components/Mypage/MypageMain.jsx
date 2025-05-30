@@ -4,6 +4,7 @@ import { Container, ContentWrapper, TopSection, Profile, Greeting, Welcome, Grad
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useState, useEffect  } from "react";
+import URL_CONFIG from "../../../conf";
 
 const MypageMain = () => {
 
@@ -12,38 +13,33 @@ const MypageMain = () => {
   const token = sessionStorage.getItem("accessToken");
   const [grade, setGrade] = useState({ icon: "", name: "" });
 
+  const apiUrl = URL_CONFIG.API_URL;
+
   // 등급 지정
   const getGradeName = (gradeId) => {
     switch (gradeId) {
-      case 1:
-        return { icon: "🌱", name: "새싹" };
-      case 2:
-        return { icon: "🌳", name: "나무" };
-      case 3:
-        return { icon: "🌲", name: "숲" };
-      default:
-        return { icon: "🌍", name: "지구" };
+      case 1: return { icon: "🌱", name: "새싹" };
+      case 2: return { icon: "🌳", name: "나무" };
+      case 3: return { icon: "🌲", name: "숲" };
+      default: return { icon: "🌍", name: "지구" };
     }
   };
 
   // 내 등급 조회
   useEffect(() => {
-    const fetchUserData = async () => {
-      try{
-        const response = await axios.get("http://localhost/info/grade", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
+    axios
+      .get(`${apiUrl}/info/grade`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
         const gradeId = response.data.gradeId;
         setGrade(getGradeName(gradeId));
-      } catch (error) {
+      })
+      .catch((error) => {
         console.error("내 등급 불러오기 실패", error);
-      }
-    };
-
-    fetchUserData();
+      });
   }, []);
 
   return(
@@ -80,22 +76,25 @@ const MypageMain = () => {
               <FaCoins size={50} />
               <Label>마일리지 현황</Label>
             </MenuItem>
+<<<<<<< HEAD
+            <MenuItem onClick={() => navi("/mypage_qna")}>
+=======
 
             
             <MenuItem
               onClick={() => {
                 const role = sessionStorage.getItem("userRole"); // 사용자 권한 확인
                 if (role === "ROLE_ADMIN") {
-                  navi("/admin/mypage_qna"); // 관리자용 QnA 페이지
+                  navi("/mypage_qna"); // 관리자용 QnA 페이지
                 } else {
                   navi("/mypage_qna"); // 일반 사용자용 QnA 페이지
                 }
               }}
             >
+>>>>>>> 754cfcb582282419baa8ecd745a5d2ac9df24c6c
               <FaQuestionCircle size={50} />
               <Label>QnA</Label>
             </MenuItem>
-            
 
           </MenuGrid>
         </ContentWrapper>

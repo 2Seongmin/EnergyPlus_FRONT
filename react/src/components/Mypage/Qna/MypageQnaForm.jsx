@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Wrapper, HeaderRow, Title, ContentDiv, BackBtn, UpdateInput, UpdateBtn, UpdateTextarea,
   ContentDetail, FooterRow } from "../../TableStyle/Table.style";
+import URL_CONFIG from "../../../../conf.js";
 
 const MypageQnaForm = () => {
 
@@ -11,9 +12,10 @@ const MypageQnaForm = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const token = sessionStorage.getItem("accessToken");
+  const apiUrl = URL_CONFIG.API_URL;
 
   useEffect(() => {
-    axios.get(`http://localhost/qnas/${id}`, {
+    axios.get(`${apiUrl}/qnas/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -28,7 +30,7 @@ const MypageQnaForm = () => {
   const handleUpdate = () => {
     const data = { qnaTitle: title, qnaContent: content };
 
-    axios.put(`http://localhost/qnas/${id}`, data, {
+    axios.put(`${apiUrl}/qnas/${id}`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

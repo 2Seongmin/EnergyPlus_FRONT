@@ -3,11 +3,13 @@ import { Title, InfoContainer, LeftDiv, Label, Input, BtnDiv, UpdateBtn, BackBtn
 import { useEffect, useState } from "react";
 import axios from "axios";
 import MypagePromise from "./MypagePromise";
+import URL_CONFIG from "../../../../conf";
 
 const MypageInfo = () => {
 
   const navi = useNavigate();
   const token = sessionStorage.getItem("accessToken");
+  const apiUrl = URL_CONFIG.API_URL;
 
   const [userEmail, setUserEmail] = useState("");
   const [userName, setUserName] = useState("");
@@ -15,42 +17,36 @@ const MypageInfo = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [promiseVersion, setPromiseVersion] = useState(0);
 
   // 내 정보 조회
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axios.get("http://localhost/info", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
+    axios
+      .get(`${apiUrl}/info`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
         const userData = response.data;
-  
+
         // 값이 없으면 그냥 빈 문자열로 처리
         setUserEmail(userData.userEmail || "");
         setUserName(userData.userName || "");
         setUserPhone(userData.userPhone || "");
-  
+
         setErrorMsg(""); // 정상 조회했으면 에러 메시지 초기화
-  
-      } catch (error) {
+      })
+      .catch((error) => {
         console.error("내 정보 조회 실패", error);
-        setErrorMsg("서버 요청에 실패했습니다."); // 요청 자체가 실패했을 때만 에러 표시
-      }
-    };
-  
-    fetchUserInfo();
+        setErrorMsg("서버 요청에 실패했습니다.");
+      });
   }, []);
 
 
   // 내 정보 수정
-  const handleInfoUpdate = async (e) => {
+  const handleInfoUpdate = (e) => {
     e.preventDefault();
 
-    // 전화번호는 11자리 숫자만 입력해주세요.
-    if(userPhone.trim().length !== 11 || isNaN(userPhone)){
+    if (userPhone.trim().length !== 11 || isNaN(userPhone)) {
       alert("전화번호는 11자리 숫자만 입력해주세요.");
       return;
     }
@@ -58,33 +54,31 @@ const MypageInfo = () => {
     setIsLoading(true);
     setErrorMsg("");
 
-    try {
-      await axios.put("http://localhost/info", 
-      {
-        userPhone: userPhone,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    // 세션스토리지에도 업데이트
-    sessionStorage.setItem("userPhone", userPhone);
-
-    alert("정보가 수정되었습니다.");
-    navi("/mypage_info");
-
-    }
-    catch(error) {
-      console.error("정보 수정 실패", error);
-      setErrorMsg("정보 수정에 실패했습니다.");
-    } finally {
-      setIsLoading(false);
-    }
+    axios
+      .put(
+        `${apiUrl}/info`,
+        { userPhone: userPhone },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .then(() => {
+        sessionStorage.setItem("userPhone", userPhone);
+        alert("정보가 수정되었습니다.");
+        navi("/mypage_info");
+      })
+      .catch((error) => {
+        console.error("정보 수정 실패", error);
+        setErrorMsg("정보 수정에 실패했습니다.");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
+  const handlePromiseChanged = () => {
+    console.log("다짐이 등록되었거나 수정되었습니다.");
+  };
 
   return(
     <>
@@ -123,7 +117,7 @@ const MypageInfo = () => {
         </LeftDiv>
 
         {/* 나의 다짐 */}
-        <MypagePromise token={token} />
+        <MypagePromise token={token} onChanged={handlePromiseChanged} />
 
       </InfoContainer>
     </>

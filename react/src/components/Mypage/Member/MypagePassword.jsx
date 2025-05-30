@@ -13,39 +13,41 @@ const MypagePassword = () => {
   const [newPassword, setNewPassword] = useState(""); // 새 비밀번호
   const [confirmPassword, setConfirmPassword] = useState(""); // 새 비밀번호 확인
 
-  const handleChangePassword = async () => {
-    if(!currentPassword || !newPassword || !confirmPassword){
+  const handleChangePassword = () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
       alert("모든 항목을 입력해주세요.");
       return;
     }
 
-    if(newPassword !== confirmPassword){
+    if (newPassword !== confirmPassword) {
       alert("새 비밀번호가 일치하지 않습니다.");
       return;
     }
 
-    try {
-      await axios.put("http://localhost/info/pass", {
-        currentPassword: currentPassword,
-        newPassword: newPassword,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    axios
+      .put(
+        "http://localhost/info/pass",
+        {
+          currentPassword: currentPassword,
+          newPassword: newPassword,
         },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then(() => {
+        // 세션스토리지에서 토큰 제거 (로그아웃 처리)
+        sessionStorage.clear();
+
+        alert("비밀번호가 변경되었습니다. 다시 로그인해주세요.");
+        window.location.replace("/login"); // 강제 리다이렉트 + 새로고침
+      })
+      .catch((error) => {
+        console.log("비밀번호 변경 오류", error);
+        alert("비밀번호 변경에 실패했습니다.");
       });
-
-      // 세션스토리지에서 토큰 제거 (로그아웃 처리)
-      sessionStorage.clear();
-
-      alert("비밀번호가 변경되었습니다. 다시 로그인해주세요.");
-      
-      // 강제 리다이렉트 + 새로고침
-      window.location.replace("/login");
-    }
-    catch(error) {
-      console.log("비밀번호 변경 오류", error);
-      alert("비밀번호 변경에 실패했습니다.");
-    }
   };
 
   return(

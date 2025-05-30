@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Wrapper, HeaderRow, Title, ContentDiv, BackBtn, UpdateInput, UpdateBtn, UpdateTextarea,
   ContentDetail, FooterRow } from "../../TableStyle/Table.style";
+import URL_CONFIG from "../../../../conf.js";
 
 const MypageQnaWrite = () => {
 
@@ -10,11 +11,12 @@ const MypageQnaWrite = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const token = sessionStorage.getItem("accessToken");
+  const apiUrl = URL_CONFIG.API_URL;
 
   const handleSubmit = () => {
     const data = { qnaTitle: title, qnaContent: content };
 
-    axios.post(`http://localhost/qnas`, data, {
+    axios.post(`${apiUrl}/qnas`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
